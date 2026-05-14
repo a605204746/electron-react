@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "outDir": "out",
+    "paths": {
+      "@frontend/*": ["./frontend/src/*"],
+      "@shared/*": ["./shared/*"]
+    }
+  },
+  "include": [
+    "frontend/**/*",
+    "shared/**/*"
+  ]
+}

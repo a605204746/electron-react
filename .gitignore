@@ -1,0 +1,9 @@
+node_modules
+dist
+out
+release
+.DS_Store
+*.log
+
+# 运行时数据（配置、数据库）
+data/

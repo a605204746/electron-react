@@ -1,4 +1,7 @@
 # Electron React Demo
+<img width="1108" height="722" alt="image" src="https://github.com/user-attachments/assets/1f115e2e-c8f5-4f44-8234-5155b0932480" />
+<img width="1108" height="722" alt="image" src="https://github.com/user-attachments/assets/8912cf6b-eae4-460a-9134-383e1073dda4" />
+
 
 A desktop application starter built with **Electron 42**, **React 18**, and **TypeScript**. It demonstrates common patterns you'll need in a real Electron app — IPC communication, SQLite persistence, file system access, and push events from the main process — all wired up with a clean architecture and a dark UI powered by Ant Design v6.
 

@@ -3,12 +3,16 @@ import { CloudDownloadOutlined, CloseOutlined, ReloadOutlined } from '@ant-desig
 import { downloadApi, downloadEvents } from '../api/download'
 import { useIpcEvent } from '../hooks/useIpcEvent'
 import type { DownloadProgress } from '@shared/types/download'
+import { useTheme } from '../infra/theme'
+import { useLang } from '../infra/i18n'
 
 type Status = 'idle' | 'downloading' | 'done' | 'error'
 
 const DEMO_URL = 'https://example.com/releases/v1.0.0/app-setup.zip'
 
 export default function DownloadPage() {
+  const { t } = useTheme()
+  const { tr } = useLang()
   const [url, setUrl] = useState(DEMO_URL)
   const [status, setStatus] = useState<Status>('idle')
   const [progress, setProgress] = useState<DownloadProgress>({ percent: 0, speed: '', downloaded: '', total: '' })
@@ -20,7 +24,6 @@ export default function DownloadPage() {
   useIpcEvent(downloadEvents.done,     (fp)  => { setStatus('done'); setResultPath(fp) })
   useIpcEvent(downloadEvents.error,    (msg) => { setStatus('error'); setErrorMsg(msg) })
 
-  // 挂载时拉取上次结果，防止事件在组件订阅前就已触发（页面切换场景）
   useEffect(() => {
     downloadApi.getLastEvent().then(event => {
       if (!event) return
@@ -31,7 +34,7 @@ export default function DownloadPage() {
 
   const start = () => {
     setStatus('downloading')
-    setProgress({ percent: 0, speed: '计算中…', downloaded: '0 KB', total: '50.0 MB' })
+    setProgress({ percent: 0, speed: tr.download.calculating, downloaded: '0 KB', total: '50.0 MB' })
     setResultPath(''); setErrorMsg('')
     downloadApi.start(url)
   }
@@ -49,26 +52,26 @@ export default function DownloadPage() {
           borderRadius: 20, padding: '4px 14px', marginBottom: 10,
         }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
-          <span style={{ color: '#34d399', fontSize: 11, fontWeight: 600, letterSpacing: '0.09em' }}>下载示例</span>
+          <span style={{ color: '#34d399', fontSize: 11, fontWeight: 600, letterSpacing: '0.09em' }}>{tr.download.badge}</span>
         </div>
-        <div style={{ color: '#3d4f63', fontSize: 12, fontFamily: 'monospace' }}>
-          主进程模拟下载 → defineEmitter 推送进度 → 渲染进程实时更新
+        <div style={{ color: t.textFaint, fontSize: 12, fontFamily: 'monospace' }}>
+          {tr.download.desc}
         </div>
       </div>
 
       {/* URL input */}
-      <div style={{ background: '#0d1523', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
-        <div style={{ color: '#2d3d55', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
-          下载地址
+      <div style={{ background: t.bgCard, border: `1px solid ${t.border}`, borderRadius: 12, padding: 20, marginBottom: 16 }}>
+        <div style={{ color: t.textFaint, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+          {tr.download.urlLabel}
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <div style={{
             flex: 1, display: 'flex', alignItems: 'center', gap: 8,
-            background: '#060b14',
-            border: `1px solid ${urlFocus ? 'rgba(52,211,153,0.4)' : 'rgba(255,255,255,0.08)'}`,
+            background: t.bgDeep,
+            border: `1px solid ${urlFocus ? 'rgba(52,211,153,0.4)' : t.border}`,
             borderRadius: 8, padding: '0 12px', transition: 'border-color 0.15s',
           }}>
-            <CloudDownloadOutlined style={{ color: urlFocus ? '#34d399' : '#2d3d55', fontSize: 13, flexShrink: 0, transition: 'color 0.15s' }} />
+            <CloudDownloadOutlined style={{ color: urlFocus ? '#34d399' : t.textFaint, fontSize: 13, flexShrink: 0, transition: 'color 0.15s' }} />
             <input
               value={url}
               onChange={e => setUrl(e.target.value)}
@@ -78,29 +81,29 @@ export default function DownloadPage() {
               placeholder="https://example.com/file.zip"
               style={{
                 flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                color: '#e2e8f0', fontSize: 13, padding: '10px 0',
+                color: t.text, fontSize: 13, padding: '10px 0',
                 fontFamily: "'Consolas', monospace",
                 opacity: status === 'downloading' ? 0.4 : 1,
               }}
             />
           </div>
-          <ActionBtn status={status} onStart={start} onCancel={cancel} onReset={reset} hasUrl={!!url.trim()} />
+          <ActionBtn status={status} tr={tr.download} onStart={start} onCancel={cancel} onReset={reset} hasUrl={!!url.trim()} />
         </div>
       </div>
 
       {/* Progress card */}
       {status !== 'idle' && (
-        <div style={{ background: '#0d1523', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: 24 }}>
+        <div style={{ background: t.bgCard, border: `1px solid ${t.border}`, borderRadius: 12, padding: 24, marginBottom: 16 }}>
 
           {/* Progress bar */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-              <span style={{ color: '#6b7a8d', fontSize: 11 }}>进度</span>
-              <span style={{ color: statusColor(status), fontSize: 20, fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontFamily: 'monospace' }}>
+              <span style={{ color: t.textSub, fontSize: 11 }}>{tr.download.progressLabel}</span>
+              <span style={{ color: statusColor(status, t.text), fontSize: 20, fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontFamily: 'monospace' }}>
                 {progress.percent}%
               </span>
             </div>
-            <div style={{ height: 6, background: '#060b14', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: 6, background: t.bgDeep, borderRadius: 3, overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 3,
                 width: `${progress.percent}%`,
@@ -118,9 +121,9 @@ export default function DownloadPage() {
           {/* Stats */}
           {status === 'downloading' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-              <StatCell label="速度" value={progress.speed} color="#60a5fa" />
-              <StatCell label="已下载" value={progress.downloaded} color="#a78bfa" />
-              <StatCell label="总大小" value={progress.total} color="#6b7a8d" />
+              <StatCell label={tr.download.speed}      value={progress.speed}      color="#60a5fa" />
+              <StatCell label={tr.download.downloaded} value={progress.downloaded} color="#a78bfa" />
+              <StatCell label={tr.download.total}      value={progress.total}      color={t.textSub} />
             </div>
           )}
 
@@ -133,7 +136,7 @@ export default function DownloadPage() {
             }}>
               <span style={{ fontSize: 16 }}>✓</span>
               <div>
-                <div style={{ color: '#34d399', fontSize: 12, fontWeight: 500, marginBottom: 2 }}>下载完成</div>
+                <div style={{ color: '#34d399', fontSize: 12, fontWeight: 500, marginBottom: 2 }}>{tr.download.done}</div>
                 <div style={{ color: '#22d3a8', fontSize: 11, fontFamily: 'monospace' }}>{resultPath}</div>
               </div>
             </div>
@@ -154,13 +157,13 @@ export default function DownloadPage() {
       )}
 
       {/* IPC flow hint */}
-      <div style={{ marginTop: 16, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
-        <div style={{ color: '#1e2d40', fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>IPC 推送链路</div>
+      <div style={{ marginTop: 16, padding: '12px 16px', background: t.bgCard, borderRadius: 8, border: `1px solid ${t.borderSubtle}` }}>
+        <div style={{ color: t.textFaint, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>{tr.download.ipcFlow}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 0, flexWrap: 'wrap', rowGap: 4 }}>
           {['download.service', 'defineEmitter', 'emit.progress()', 'ipcRenderer.on', 'useIpcEvent', 'React setState'].map((item, i, arr) => (
             <span key={item} style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ color: '#2d4060', fontSize: 11, fontFamily: 'monospace', background: 'rgba(255,255,255,0.03)', padding: '2px 7px', borderRadius: 4 }}>{item}</span>
-              {i < arr.length - 1 && <span style={{ color: '#1a2a3a', fontSize: 11, margin: '0 3px' }}>→</span>}
+              <span style={{ color: t.textSub, fontSize: 11, fontFamily: 'monospace', background: t.bgDeep, padding: '2px 7px', borderRadius: 4 }}>{item}</span>
+              {i < arr.length - 1 && <span style={{ color: t.textFaint, fontSize: 11, margin: '0 3px' }}>→</span>}
             </span>
           ))}
         </div>
@@ -170,24 +173,29 @@ export default function DownloadPage() {
   )
 }
 
-function statusColor(s: Status) {
+function statusColor(s: Status, textColor: string) {
   if (s === 'done') return '#34d399'
   if (s === 'error') return '#f87171'
-  return '#e2e8f0'
+  return textColor
 }
 
 function StatCell({ label, value, color }: { label: string; value: string; color: string }) {
+  const { t } = useTheme()
   return (
-    <div style={{ background: '#060b14', borderRadius: 8, padding: '10px 12px' }}>
-      <div style={{ color: '#2d3d55', fontSize: 10, marginBottom: 4 }}>{label}</div>
+    <div style={{ background: t.bgDeep, borderRadius: 8, padding: '10px 12px' }}>
+      <div style={{ color: t.textFaint, fontSize: 10, marginBottom: 4 }}>{label}</div>
       <div style={{ color, fontSize: 13, fontWeight: 600, fontFamily: 'monospace' }}>{value}</div>
     </div>
   )
 }
 
-function ActionBtn({ status, onStart, onCancel, onReset, hasUrl }: {
-  status: Status; onStart: () => void; onCancel: () => void; onReset: () => void; hasUrl: boolean
+type DownloadTr = { cancel: string; reset: string; start: string }
+
+function ActionBtn({ status, tr, onStart, onCancel, onReset, hasUrl }: {
+  status: Status; tr: DownloadTr
+  onStart: () => void; onCancel: () => void; onReset: () => void; hasUrl: boolean
 }) {
+  const { t } = useTheme()
   const [hov, setHov] = useState(false)
 
   if (status === 'downloading') {
@@ -197,9 +205,9 @@ function ActionBtn({ status, onStart, onCancel, onReset, hasUrl }: {
         background: hov ? 'rgba(248,113,113,0.15)' : 'rgba(248,113,113,0.08)',
         border: '1px solid rgba(248,113,113,0.35)',
         borderRadius: 8, color: '#f87171', fontSize: 13, fontWeight: 500,
-        cursor: 'pointer', transition: 'all 0.15s', justifyContent: 'center',
+        cursor: 'pointer', transition: 'all 0.15s', justifyContent: 'center', outline: 'none',
       }}>
-        <CloseOutlined style={{ fontSize: 11 }} />取消
+        <CloseOutlined style={{ fontSize: 11 }} />{tr.cancel}
       </button>
     )
   }
@@ -208,12 +216,12 @@ function ActionBtn({ status, onStart, onCancel, onReset, hasUrl }: {
     return (
       <button onClick={onReset} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
         display: 'flex', alignItems: 'center', gap: 6, padding: '0 18px', minWidth: 80,
-        background: hov ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 8, color: '#6b7a8d', fontSize: 13, fontWeight: 500,
-        cursor: 'pointer', transition: 'all 0.15s', justifyContent: 'center',
+        background: hov ? t.navHoverBg : 'transparent',
+        border: `1px solid ${t.border}`,
+        borderRadius: 8, color: t.textSub, fontSize: 13, fontWeight: 500,
+        cursor: 'pointer', transition: 'all 0.15s', justifyContent: 'center', outline: 'none',
       }}>
-        <ReloadOutlined style={{ fontSize: 11 }} />重置
+        <ReloadOutlined style={{ fontSize: 11 }} />{tr.reset}
       </button>
     )
   }
@@ -222,11 +230,11 @@ function ActionBtn({ status, onStart, onCancel, onReset, hasUrl }: {
     <button onClick={onStart} disabled={!hasUrl} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
       display: 'flex', alignItems: 'center', gap: 6, padding: '0 18px', minWidth: 80,
       background: hasUrl ? (hov ? 'rgba(52,211,153,0.2)' : 'rgba(52,211,153,0.12)') : 'transparent',
-      border: `1px solid ${hasUrl ? 'rgba(52,211,153,0.4)' : 'rgba(255,255,255,0.06)'}`,
-      borderRadius: 8, color: hasUrl ? '#34d399' : '#2d3d55', fontSize: 13, fontWeight: 500,
-      cursor: hasUrl ? 'pointer' : 'default', transition: 'all 0.15s', justifyContent: 'center',
+      border: `1px solid ${hasUrl ? 'rgba(52,211,153,0.4)' : 'rgba(52,211,153,0.15)'}`,
+      borderRadius: 8, color: hasUrl ? '#34d399' : 'rgba(52,211,153,0.4)', fontSize: 13, fontWeight: 500,
+      cursor: hasUrl ? 'pointer' : 'default', transition: 'all 0.15s', justifyContent: 'center', outline: 'none',
     }}>
-      <CloudDownloadOutlined style={{ fontSize: 12 }} />下载
+      <CloudDownloadOutlined style={{ fontSize: 12 }} />{tr.start}
     </button>
   )
 }

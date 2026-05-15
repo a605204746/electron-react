@@ -2,8 +2,9 @@
 
 A desktop application starter built with Electron 41 + React 18 + TypeScript, featuring a type-safe IPC framework, SQLite local database, file operations, and real-time event push examples.
 
-<img width="1108" height="722" alt="image" src="https://github.com/user-attachments/assets/1f115e2e-c8f5-4f44-8234-5155b0932480" />
-<img width="1108" height="722" alt="image" src="https://github.com/user-attachments/assets/8912cf6b-eae4-460a-9134-383e1073dda4" />
+<img width="1108" height="754" alt="image" src="https://github.com/user-attachments/assets/d5c1deb7-a593-421d-88e2-adfa535943e6" />
+<img width="1108" height="754" alt="image" src="https://github.com/user-attachments/assets/68be3c84-a340-47e0-8268-d92f8b920277" />
+
 
 ---
 

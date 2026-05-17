@@ -5,6 +5,7 @@ import { join } from 'path'
 import { appConfig } from './infra/config'
 import { closeDb } from './infra/database'
 import { createMainWindow } from './window/mainWindow'
+import appConfigJson from '../app.config.json'
 
 // Vite dev 模式需要 unsafe-eval，关掉 Electron 的安全提示避免噪音
 if (is.dev) process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
@@ -28,7 +29,7 @@ if (is.dev) {
 app.whenReady().then(() => {
   appConfig.load()
 
-  electronApp.setAppUserModelId('com.demo')
+  electronApp.setAppUserModelId(appConfigJson.branding.appUserModelId)
   app.on('browser-window-created', (_, win) => { optimizer.watchWindowShortcuts(win) })
 
   createMainWindow()

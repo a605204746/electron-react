@@ -3,11 +3,12 @@ import { is } from '@electron-toolkit/utils'
 import { createWriteStream, mkdirSync } from 'fs'
 import { join } from 'path'
 import type { WriteStream } from 'fs'
+import appConfigJson from '../../app.config.json'
 
-type Level = 'debug' | 'info' | 'warn' | 'error'
+export type Level = 'debug' | 'info' | 'warn' | 'error'
 
 const LEVEL_ORDER: Record<Level, number> = { debug: 0, info: 1, warn: 2, error: 3 }
-const MIN_LEVEL: Level = is.dev ? 'debug' : 'info'
+const MIN_LEVEL: Level = is.dev ? 'debug' : (appConfigJson.log.level as Level)
 
 // ANSI 颜色（终端输出）
 const C = {
@@ -25,8 +26,8 @@ let _stream: WriteStream | null = null
 function getStream(): WriteStream | null {
   if (_stream) return _stream
   try {
-    // 始终写到 <运行目录>/data/logs/
-    const dir = join(app.getAppPath(), 'data', 'logs')
+    // 写到 userData/data/logs/（打包后仍可写）
+    const dir = join(app.getPath('userData'), 'data', 'logs')
     mkdirSync(dir, { recursive: true })
     const date = new Date().toISOString().slice(0, 10)
     _stream = createWriteStream(join(dir, `${date}.log`), { flags: 'a' })

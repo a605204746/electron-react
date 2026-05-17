@@ -1,0 +1,33 @@
+{
+  "branding": {
+    "appId":          "com.demo.electron-react",
+    "productName":    "ElectronReactDemo",
+    "author":         "Demo",
+    "copyright":      "Copyright © 2024",
+    "description":    "Electron + React 入门示例",
+    "appUserModelId": "com.demo",
+    "title":          "ElectronReactDemo",
+    "icon": {
+      "win":   "resources/icon.ico",
+      "mac":   "resources/icon.icns",
+      "linux": "resources/icon.png"
+    }
+  },
+  "window": {
+    "width":    900,
+    "height":   640,
+    "minWidth":  680,
+    "minHeight": 480
+  },
+  "tray": {
+    "enabled": false,
+    "tooltip": "ElectronReactDemo"
+  },
+  "log": {
+    "level":   "info",
+    "maxDays": 7
+  },
+  "server": {
+    "port": 3000
+  }
+}

@@ -1,3 +1,5 @@
+import type { Level } from '@main/infra/logger'
+
 export interface WindowConfig {
   width:     number
   height:    number
@@ -11,9 +13,7 @@ export interface TrayConfig {
 }
 
 export interface LogConfig {
-  /** 最低记录级别；生产包默认 'info' */
-  level: 'debug' | 'info' | 'warn' | 'error'
-  /** 日志文件保留天数（仅生产包） */
+  level:   Level
   maxDays: number
 }
 
@@ -28,9 +28,11 @@ export interface AppConfig {
   server: ServerConfig
 }
 
+import appConfig from '../../app.config.json'
+
 export const DEFAULT_CONFIG: AppConfig = {
-  window: { width: 900, height: 640, minWidth: 680, minHeight: 480 },
-  tray:   { enabled: false, tooltip: 'Electron App' },
-  log:    { level: 'info', maxDays: 7 },
-  server: { port: 3000 },
+  window: appConfig.window,
+  tray:   appConfig.tray,
+  log:    { ...appConfig.log, level: appConfig.log.level as Level },
+  server: appConfig.server,
 }

@@ -7,9 +7,9 @@ import { DEFAULT_CONFIG } from '@shared/config'
 
 const logger = createLogger('config')
 
-/** 统一数据目录：始终在当前运行目录的 data/ 下 */
+/** 统一数据目录：使用 userData 路径，打包后仍可写 */
 export function getDataDir(): string {
-  return join(app.getAppPath(), 'data')
+  return join(app.getPath('userData'), 'data')
 }
 
 function deepMerge<T extends object>(base: T, override: Partial<T>): T {

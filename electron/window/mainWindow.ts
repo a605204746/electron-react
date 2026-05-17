@@ -2,6 +2,9 @@ import { BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { appConfig } from '@main/infra/config'
+import appConfigJson from '../../app.config.json'
+
+const ICON = join(__dirname, '../..', appConfigJson.branding.icon.linux)
 
 export function createMainWindow(): BrowserWindow {
   const { window: w } = appConfig.get()
@@ -10,6 +13,8 @@ export function createMainWindow(): BrowserWindow {
     height:    w.height,
     minWidth:  w.minWidth,
     minHeight: w.minHeight,
+    icon: ICON,
+    title: appConfigJson.branding.title,
     show: false,
     autoHideMenuBar: !is.dev,
     webPreferences: {

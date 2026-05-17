@@ -1,6 +1,7 @@
 appId: com.demo.electron-react
 productName: ElectronReactDemo
 copyright: Copyright © 2024
+author: Demo
 
 directories:
   buildResources: resources
